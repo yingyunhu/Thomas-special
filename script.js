@@ -65,6 +65,21 @@ function setAllHearts(symbol) {
   });
 }
 
+// ✅ Make it SUPER visible: spawn fresh hearts immediately
+function burstHearts(symbol, amount = 12) {
+  for (let i = 0; i < amount; i++) {
+    setTimeout(() => {
+      const heart = document.createElement("div");
+      heart.className = "heart-float";
+      heart.textContent = symbol;
+      heart.style.left = Math.random() * 100 + "%";
+      heart.style.bottom = "0px";
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 4000);
+    }, i * 30);
+  }
+}
+
 // ✅ Hearts on first screen too
 setInterval(createFloatingHeart, 300);
 
@@ -102,9 +117,10 @@ yesBtn.addEventListener("click", () => {
   document.body.style.backgroundRepeat = "no-repeat";
   document.body.style.backgroundColor = "rgba(255,255,255,0.15)";
 
-  // ✅ hearts go back to normal
+  // ✅ hearts go back to normal + visible burst
   currentHeart = "💕";
   setAllHearts("💕");
+  burstHearts("💕", 10);
 
   message.innerHTML = `
     <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExbGltbXg4eTc2YzU0bzJvMGJxM3Fva2lnejQ0NjdwYmJveTZreTcwMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/naAaDvbAoOYdW/giphy.gif" class="cat-happy" alt="happy cat">
@@ -132,6 +148,7 @@ yesBtn.addEventListener("click", () => {
 noBtn.onpointerenter = () => {
   currentHeart = "💔";
   setAllHearts("💔");
+  burstHearts("💔", 18);
 
   noHoverCount++;
 
@@ -150,7 +167,7 @@ noBtn.onpointerenter = () => {
 
   if (noHoverCount >= 7) permaAngry = true;
 
-  // Final boss mode: angry cat becomes background (ONLY if not already on YES screen)
+  // Final boss mode: angry cat becomes background
   if (noHoverCount >= 10 && !bossBackgroundActivated) {
     bossBackgroundActivated = true;
 
@@ -200,7 +217,7 @@ noBtn.onpointerenter = () => {
   // Get container bounds
   const container = document.querySelector(".container");
   const containerRect = container.getBoundingClientRect();
-  
+
   // Get button size
   const btnWidth = noBtn.offsetWidth;
   const btnHeight = noBtn.offsetHeight;
@@ -219,12 +236,13 @@ noBtn.onpointerenter = () => {
   // Apply position
   noBtn.style.left = newX + "px";
   noBtn.style.top = newY + "px";
-  noBtn.style.transform = "translate(0, 0)"; // reset any transform
+  noBtn.style.transform = "translate(0, 0)";
 };
 
 noBtn.onpointerleave = () => {
   currentHeart = "💕";
   setAllHearts("💕");
+  burstHearts("💕", 8);
 
   if (mainCatImg) {
     mainCatImg.src = permaAngry ? noHoverCatSrc : originalCatSrc;
