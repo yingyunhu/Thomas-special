@@ -164,9 +164,9 @@ noBtn.onpointerenter = () => {
   } else if (noHoverCount <= 4) {
     noBtn.textContent = "Are you sure?";
   } else if (noHoverCount <= 6) {
-    noBtn.textContent = "????";
+    noBtn.textContent = "Get me if u can :p";
   } else if (noHoverCount <= 8) {
-    noBtn.textContent = "Be serious.";
+    noBtn.textContent = "?????";
   } else {
     noBtn.textContent = "what the fuck";
   }
