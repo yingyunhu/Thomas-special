@@ -144,6 +144,8 @@ button {
   font-size: 30px;
   animation: floatUp 4s ease-in forwards;
   pointer-events: none;
+  opacity: 1; 
+
 }
 
 @keyframes floatUp {
