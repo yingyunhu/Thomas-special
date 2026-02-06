@@ -90,7 +90,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  position: relative; /* IMPORTANT */
+  position: relative;
 }
 
 .cat-main {
@@ -121,19 +121,18 @@ button {
   border-radius: 50px;
   cursor: pointer;
   transition: transform 0.2s;
-  white-space: nowrap; /* keeps text on one line */
+  white-space: nowrap;
 }
 
 #yesBtn {
   background: #324e9c;
   color: white;
-  position: relative; /* stays in normal flow */
+  position: relative;
 }
 
 #noBtn {
   background: #e0e0e0;
   color: #888;
-  /* NO position here - JS will set it to fixed */
 }
 
 .hidden {
