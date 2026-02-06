@@ -45,10 +45,13 @@ let permaAngry = false;
 // after 10 hovers -> angry cat becomes page background
 let bossBackgroundActivated = false;
 
-// Floating hearts
+// Floating hearts state
 let currentHeart = "💕";
+let heartInterval = null;
+let revertTimer = null;
 
-function createFloatingHeart() {
+// create 1 heart
+function spawnHeart() {
   const heart = document.createElement("div");
   heart.className = "heart-float";
   heart.textContent = currentHeart;
@@ -58,30 +61,34 @@ function createFloatingHeart() {
   setTimeout(() => heart.remove(), 4000);
 }
 
-// flip ALL existing hearts already on screen
+// flip all existing hearts currently in DOM
 function setAllHearts(symbol) {
   document.querySelectorAll(".heart-float").forEach((h) => {
     h.textContent = symbol;
   });
 }
 
-// ✅ Make it SUPER visible: spawn fresh hearts immediately
-function burstHearts(symbol, amount = 12) {
-  for (let i = 0; i < amount; i++) {
-    setTimeout(() => {
-      const heart = document.createElement("div");
-      heart.className = "heart-float";
-      heart.textContent = symbol;
-      heart.style.left = Math.random() * 100 + "%";
-      heart.style.bottom = "0px";
-      document.body.appendChild(heart);
-      setTimeout(() => heart.remove(), 4000);
-    }, i * 30);
-  }
+// controlled interval so we can swap 💕 <-> 💔 cleanly
+function startHearts(symbol) {
+  currentHeart = symbol;
+  if (heartInterval) clearInterval(heartInterval);
+  heartInterval = setInterval(spawnHeart, 300);
 }
 
-// ✅ Hearts on first screen too
-setInterval(createFloatingHeart, 300);
+// ✅ keep 💔 visible even though the button runs away (so pointerleave fires instantly)
+function setHeartsTemporarily(symbol, ms = 900) {
+  startHearts(symbol);
+  setAllHearts(symbol);
+
+  if (revertTimer) clearTimeout(revertTimer);
+  revertTimer = setTimeout(() => {
+    startHearts("💕");
+    setAllHearts("💕");
+  }, ms);
+}
+
+// start pink hearts immediately (start screen too)
+startHearts("💕");
 
 envelopeContainer.addEventListener("click", () => {
   // helps some browsers allow audio after a click
@@ -109,18 +116,18 @@ yesBtn.addEventListener("click", () => {
 
   // ✅ YES overrides any angry boss background with a happy GIF background
   bossBackgroundActivated = false;
-  document.body.style.animation = ""; // stop shake if any
-  document.body.style.background = ""; // clear rgb background
+  document.body.style.animation = "";
+  document.body.style.background = "";
   document.body.style.backgroundImage = `url(${yesBgGif})`;
   document.body.style.backgroundSize = "cover";
   document.body.style.backgroundPosition = "center";
   document.body.style.backgroundRepeat = "no-repeat";
   document.body.style.backgroundColor = "rgba(255,255,255,0.15)";
 
-  // ✅ hearts go back to normal + visible burst
-  currentHeart = "💕";
+  // hearts back to normal (lock it in)
+  if (revertTimer) clearTimeout(revertTimer);
+  startHearts("💕");
   setAllHearts("💕");
-  burstHearts("💕", 10);
 
   message.innerHTML = `
     <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExbGltbXg4eTc2YzU0bzJvMGJxM3Fva2lnejQ0NjdwYmJveTZreTcwMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/naAaDvbAoOYdW/giphy.gif" class="cat-happy" alt="happy cat">
@@ -146,9 +153,9 @@ yesBtn.addEventListener("click", () => {
 });
 
 noBtn.onpointerenter = () => {
-  currentHeart = "💔";
-  setAllHearts("💔");
-  burstHearts("💔", 18);
+  // ✅ switch hearts to 💔 and KEEP it briefly (because button escapes instantly)
+  setHeartsTemporarily("💔", 900);
+
   noHoverCount++;
 
   // Progressive text changes
@@ -177,13 +184,9 @@ noBtn.onpointerenter = () => {
     document.body.style.backgroundColor = "rgba(0,0,0,0.35)";
   }
 
-  // Cat mood progression:
+  // Cat mood progression
   if (mainCatImg) {
-    if (permaAngry || noHoverCount >= 3) {
-      mainCatImg.src = noHoverCatSrc;
-    } else {
-      mainCatImg.src = originalCatSrc;
-    }
+    mainCatImg.src = permaAngry || noHoverCount >= 3 ? noHoverCatSrc : originalCatSrc;
   }
 
   // Spammy overlapping audio + louder
@@ -201,7 +204,7 @@ noBtn.onpointerenter = () => {
     document.body.style.animation = "";
   }, 300);
 
-  // Much redder background (ramps up fast) — only BEFORE boss bg activates
+  // Redder background before boss bg activates
   const t = Math.min(noHoverCount / 8, 1);
   const r = Math.round(50 + 205 * t);
   const g = Math.round(60 * (1 - t));
@@ -210,39 +213,31 @@ noBtn.onpointerenter = () => {
     document.body.style.background = `rgb(${r}, ${g}, ${b})`;
   }
 
-  // Set to fixed positioning FIRST
+  // Move NO inside the white container
   noBtn.style.position = "fixed";
 
-  // Get container bounds
   const container = document.querySelector(".container");
   const containerRect = container.getBoundingClientRect();
 
-  // Get button size
   const btnWidth = noBtn.offsetWidth;
   const btnHeight = noBtn.offsetHeight;
   const padding = 20;
 
-  // Calculate safe zone inside container
   const minX = containerRect.left + padding;
   const minY = containerRect.top + padding;
   const maxX = containerRect.right - btnWidth - padding;
   const maxY = containerRect.bottom - btnHeight - padding;
 
-  // Random position within bounds
   const newX = minX + Math.random() * (maxX - minX);
   const newY = minY + Math.random() * (maxY - minY);
 
-  // Apply position
   noBtn.style.left = newX + "px";
   noBtn.style.top = newY + "px";
   noBtn.style.transform = "translate(0, 0)";
 };
 
+// note: we DON'T flip back to 💕 here anymore — timer handles it
 noBtn.onpointerleave = () => {
-  currentHeart = "💕";
-  setAllHearts("💕");
-  burstHearts("💕", 8);
-
   if (mainCatImg) {
     mainCatImg.src = permaAngry ? noHoverCatSrc : originalCatSrc;
   }
