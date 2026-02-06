@@ -1,135 +1,7 @@
-console.log("JavaScript loaded!");
-
-const sounds = {
-  open: new Audio("https://files.catbox.moe/ko0toy.mp3"),
-  yes: new Audio("https://files.catbox.moe/09oh2e.mp3"), // click SFX
-};
-
-// ✅ Background love song (starts after YES, loops)
-const bgSong = new Audio("https://files.catbox.moe/4eojz9.mp3");
-bgSong.loop = true;
-bgSong.volume = 0.5;
-
-Object.values(sounds).forEach((sound) => {
-  sound.volume = 0.3;
-  sound.addEventListener("error", () => (sound.muted = true));
-});
-bgSong.addEventListener("error", () => (bgSong.muted = true));
-
-const startScreen = document.getElementById("startScreen");
-const mainScreen = document.getElementById("mainScreen");
-const envelope = document.getElementById("envelope");
-const envelopeContainer = document.getElementById("envelopeContainer");
-const yesBtn = document.getElementById("yesBtn");
-const noBtn = document.getElementById("noBtn");
-const message = document.getElementById("message");
-
-// Cat swap (main screen)
-const mainCatImg = document.querySelector(".cat-main");
-const originalCatSrc = mainCatImg ? mainCatImg.src : "";
-
-// Angry cat (NO hover)
-const noHoverCatSrc =
-  "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMWhoMzhxcjlnNWs0cWN4YnllY2E3bWY4bzd4Yms0NmVtZ25pOXdtbCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/3T7WB64PW315Z8zhRg/giphy.gif";
-
-// ✅ Happy YES background GIF
-const yesBgGif =
-  "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExaWoyOTJ4cWhjb21nOTFpbG5hazZuMWxtd2w2dXUwbDZpMTc5ODV6eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKoWXm3okO1kgHC/giphy.gif";
-
-let yesSize = 1;
-let noHoverCount = 0;
-
-// after 7 hovers -> angry cat stays forever
-let permaAngry = false;
-
-// after 10 hovers -> angry cat becomes page background
-let bossBackgroundActivated = false;
-
-// Floating hearts
-let currentHeart = "💕";
-
-function createFloatingHeart() {
-  const heart = document.createElement("div");
-  heart.className = "heart-float";
-  heart.textContent = currentHeart;
-  heart.style.left = Math.random() * 100 + "%";
-  heart.style.bottom = "0px";
-  document.body.appendChild(heart);
-  setTimeout(() => heart.remove(), 4000);
-}
-
-// flip ALL existing hearts already on screen
-function setAllHearts(symbol) {
-  document.querySelectorAll(".heart-float").forEach((h) => {
-    h.textContent = symbol;
-  });
-}
-
-// ✅ Hearts on first screen too
-setInterval(createFloatingHeart, 300);
-
-envelopeContainer.addEventListener("click", () => {
-  // helps some browsers allow audio after a click
-  const unlock = new Audio("https://files.catbox.moe/rudqvb.mp3");
-  unlock.volume = 0;
-  unlock.play().catch(() => {});
-
-  sounds.open.play().catch(() => {});
-  envelope.classList.add("opening");
-
-  setTimeout(() => {
-    startScreen.style.display = "none";
-    mainScreen.style.display = "flex";
-    mainScreen.classList.remove("hidden");
-  }, 1000);
-});
-
-yesBtn.addEventListener("click", () => {
-  // click SFX
-  sounds.yes.play().catch(() => {});
-
-  // ✅ start background song
-  bgSong.currentTime = 0;
-  bgSong.play().catch(() => {});
-
-  // ✅ YES overrides any angry boss background with a happy GIF background
-  bossBackgroundActivated = false;
-  document.body.style.animation = ""; // stop shake if any
-  document.body.style.background = ""; // clear rgb background
-  document.body.style.backgroundImage = `url(${yesBgGif})`;
-  document.body.style.backgroundSize = "cover";
-  document.body.style.backgroundPosition = "center";
-  document.body.style.backgroundRepeat = "no-repeat";
-  document.body.style.backgroundColor = "rgba(255,255,255,0.15)";
-
-  // ✅ hearts go back to normal
-  currentHeart = "💕";
-  setAllHearts("💕");
-
-  message.innerHTML = `
-    <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExbGltbXg4eTc2YzU0bzJvMGJxM3Fva2lnejQ0NjdwYmJveTZreTcwMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/naAaDvbAoOYdW/giphy.gif" class="cat-happy" alt="happy cat">
-    <div>Good boy...</div>
-  `;
-  message.classList.remove("hidden");
-  document.querySelector(".buttons").style.display = "none";
-  document.querySelector("h1").style.display = "none";
-  document.querySelector(".cat-main").style.display = "none";
-
-  for (let i = 0; i < 100; i++) {
-    setTimeout(() => {
-      const confetti = document.createElement("div");
-      confetti.className = "confetti";
-      confetti.style.left = Math.random() * 100 + "%";
-      confetti.style.background = ["#f093fb", "#f5576c", "#feca57", "#48dbfb"][
-        Math.floor(Math.random() * 4)
-      ];
-      document.body.appendChild(confetti);
-      setTimeout(() => confetti.remove(), 3000);
-    }, i * 20);
-  }
-});
-
-noBtn.onpointerenter = () => {
+// Better mobile handling - move button on touch/hover START, not after
+noBtn.addEventListener("pointerdown", (e) => {
+  e.preventDefault(); // prevent the click from going through
+  
   currentHeart = "💔";
   setAllHearts("💔");
 
@@ -150,7 +22,7 @@ noBtn.onpointerenter = () => {
 
   if (noHoverCount >= 7) permaAngry = true;
 
-  // Final boss mode: angry cat becomes background (ONLY if not already on YES screen)
+  // Final boss mode
   if (noHoverCount >= 10 && !bossBackgroundActivated) {
     bossBackgroundActivated = true;
 
@@ -161,7 +33,7 @@ noBtn.onpointerenter = () => {
     document.body.style.backgroundColor = "rgba(0,0,0,0.35)";
   }
 
-  // Cat mood progression:
+  // Cat mood progression
   if (mainCatImg) {
     if (permaAngry || noHoverCount >= 3) {
       mainCatImg.src = noHoverCatSrc;
@@ -170,7 +42,7 @@ noBtn.onpointerenter = () => {
     }
   }
 
-  // Spammy overlapping audio + louder
+  // Audio
   const hoverSound = new Audio("https://files.catbox.moe/rudqvb.mp3");
   hoverSound.volume = Math.min(0.2 + noHoverCount * 0.1, 1);
   hoverSound.play().catch(() => {});
@@ -185,7 +57,7 @@ noBtn.onpointerenter = () => {
     document.body.style.animation = "";
   }, 300);
 
-  // Much redder background (ramps up fast) — only BEFORE boss bg activates
+  // Redder background
   const t = Math.min(noHoverCount / 8, 1);
   const r = Math.round(50 + 205 * t);
   const g = Math.round(60 * (1 - t));
@@ -194,39 +66,62 @@ noBtn.onpointerenter = () => {
     document.body.style.background = `rgb(${r}, ${g}, ${b})`;
   }
 
-  // Set to fixed positioning FIRST
+  // Move the button
   noBtn.style.position = "fixed";
 
-  // Get container bounds
   const container = document.querySelector(".container");
   const containerRect = container.getBoundingClientRect();
   
-  // Get button size
   const btnWidth = noBtn.offsetWidth;
   const btnHeight = noBtn.offsetHeight;
   const padding = 20;
 
-  // Calculate safe zone inside container
   const minX = containerRect.left + padding;
   const minY = containerRect.top + padding;
   const maxX = containerRect.right - btnWidth - padding;
   const maxY = containerRect.bottom - btnHeight - padding;
 
-  // Random position within bounds
   const newX = minX + Math.random() * (maxX - minX);
   const newY = minY + Math.random() * (maxY - minY);
 
-  // Apply position
   noBtn.style.left = newX + "px";
   noBtn.style.top = newY + "px";
-  noBtn.style.transform = "translate(0, 0)"; // reset any transform
-};
+  noBtn.style.transform = "translate(0, 0)";
+});
 
-noBtn.onpointerleave = () => {
+// Desktop hover behavior (optional, for extra annoyance on desktop)
+noBtn.addEventListener("mouseenter", () => {
+  if (window.innerWidth > 768) { // only on desktop
+    currentHeart = "💔";
+    setAllHearts("💔");
+    
+    // Trigger same behavior as pointerdown but without text change
+    noBtn.style.position = "fixed";
+    
+    const container = document.querySelector(".container");
+    const containerRect = container.getBoundingClientRect();
+    const btnWidth = noBtn.offsetWidth;
+    const btnHeight = noBtn.offsetHeight;
+    const padding = 20;
+    
+    const minX = containerRect.left + padding;
+    const minY = containerRect.top + padding;
+    const maxX = containerRect.right - btnWidth - padding;
+    const maxY = containerRect.bottom - btnHeight - padding;
+    
+    const newX = minX + Math.random() * (maxX - minX);
+    const newY = minY + Math.random() * (maxY - minY);
+    
+    noBtn.style.left = newX + "px";
+    noBtn.style.top = newY + "px";
+  }
+});
+
+noBtn.addEventListener("pointerup", () => {
   currentHeart = "💕";
   setAllHearts("💕");
 
   if (mainCatImg) {
     mainCatImg.src = permaAngry ? noHoverCatSrc : originalCatSrc;
   }
-};
+});
