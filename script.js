@@ -12,7 +12,7 @@ bgSong.loop = true;
 bgSong.volume = 0.5;
 
 // ✅ Kahoot lobby music (starts when letter opens, loops)
-const kahootSong = new Audio("https://files.catbox.moe/rudqvb.mp3");
+const kahootSong = new Audio("https://files.catbox.moe/czlyyt.mp3");
 kahootSong.loop = true;
 kahootSong.volume = 0.4;
 
