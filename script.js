@@ -3,6 +3,7 @@ console.log("JavaScript loaded!");
 const sounds = {
   open: new Audio("https://files.catbox.moe/ko0toy.mp3"),
   yes: new Audio("https://files.catbox.moe/09oh2e.mp3"),
+  hover: new Audio("https://files.catbox.moe/rudqvb.mp3"), // ✅ ADD THIS
 };
 
 // ✅ Background love song (starts after YES, loops)
@@ -44,6 +45,7 @@ let noHoverCount = 0;
 let permaAngry = false;
 let bossBackgroundActivated = false;
 let currentHeart = "💕";
+let canPlayHoverSound = true; // ✅ ADD THIS
 
 function createFloatingHeart() {
   const heart = document.createElement("div");
@@ -64,8 +66,6 @@ function setAllHearts(symbol) {
 setInterval(createFloatingHeart, 300);
 
 envelopeContainer.addEventListener("click", () => {
-  console.log("Envelope clicked!"); // debug line
-  
   const unlock = new Audio("https://files.catbox.moe/rudqvb.mp3");
   unlock.volume = 0;
   unlock.play().catch(() => {});
@@ -78,7 +78,6 @@ envelopeContainer.addEventListener("click", () => {
     mainScreen.style.display = "flex";
     mainScreen.classList.remove("hidden");
     
-    // ✅ START KAHOOT MUSIC
     kahootSong.currentTime = 0;
     kahootSong.play().catch(() => {});
   }, 1000);
@@ -87,7 +86,6 @@ envelopeContainer.addEventListener("click", () => {
 yesBtn.addEventListener("click", () => {
   sounds.yes.play().catch(() => {});
 
-  // ✅ STOP KAHOOT, START LOVE SONG
   kahootSong.pause();
   kahootSong.currentTime = 0;
 
@@ -169,9 +167,15 @@ noBtn.addEventListener("pointerdown", (e) => {
     }
   }
 
-  const hoverSound = new Audio("https://files.catbox.moe/rudqvb.mp3");
-  hoverSound.volume = Math.min(0.2 + noHoverCount * 0.1, 1);
-  hoverSound.play().catch(() => {});
+  // ✅ FIXED - use shared sound with cooldown
+  if (canPlayHoverSound) {
+    sounds.hover.volume = Math.min(0.2 + noHoverCount * 0.1, 1);
+    sounds.hover.currentTime = 0;
+    sounds.hover.play().catch(() => {});
+    
+    canPlayHoverSound = false;
+    setTimeout(() => canPlayHoverSound = true, 200);
+  }
 
   yesSize += 0.15;
   yesBtn.style.transform = `scale(${yesSize})`;
@@ -211,10 +215,20 @@ noBtn.addEventListener("pointerdown", (e) => {
   noBtn.style.transform = "translate(0, 0)";
 });
 
+// ✅ FIXED - add cooldown here too
 noBtn.addEventListener("mouseenter", () => {
   if (window.innerWidth > 768) {
     currentHeart = "💔";
     setAllHearts("💔");
+    
+    // Play sound with cooldown
+    if (canPlayHoverSound) {
+      sounds.hover.currentTime = 0;
+      sounds.hover.play().catch(() => {});
+      
+      canPlayHoverSound = false;
+      setTimeout(() => canPlayHoverSound = true, 200);
+    }
     
     noBtn.style.position = "fixed";
     
