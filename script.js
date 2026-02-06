@@ -149,7 +149,6 @@ noBtn.onpointerenter = () => {
   currentHeart = "💔";
   setAllHearts("💔");
   burstHearts("💔", 18);
-
   noHoverCount++;
 
   // Progressive text changes
