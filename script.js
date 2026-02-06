@@ -11,7 +11,7 @@ bgSong.loop = true;
 bgSong.volume = 0.5;
 
 // ✅ Kahoot lobby music (starts when letter opens, loops)
-const kahootSong = new Audio("https://files.catbox.moe/czlyyt.mp33");
+const kahootSong = new Audio("https://files.catbox.moe/rudqvb.mp3");
 kahootSong.loop = true;
 kahootSong.volume = 0.4;
 
@@ -64,6 +64,8 @@ function setAllHearts(symbol) {
 setInterval(createFloatingHeart, 300);
 
 envelopeContainer.addEventListener("click", () => {
+  console.log("Envelope clicked!"); // debug line
+  
   const unlock = new Audio("https://files.catbox.moe/rudqvb.mp3");
   unlock.volume = 0;
   unlock.play().catch(() => {});
