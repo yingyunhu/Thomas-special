@@ -1,4 +1,4 @@
-console.log("JavaScript loaded!");
+console.log("JavaScript loaded! VERSION 3 - NEW CODE");
 
 const sounds = {
   open: new Audio("https://files.catbox.moe/ko0toy.mp3"),
@@ -194,6 +194,7 @@ noBtn.addEventListener("pointerdown", (e) => {
 
   noHoverCount++;
 
+  // ✅ CORRECT TEXT PROGRESSION
   if (noHoverCount <= 2) {
     noBtn.textContent = "No ??";
   } else if (noHoverCount <= 4) {
@@ -266,15 +267,15 @@ noBtn.addEventListener("mouseenter", () => {
 
     noHoverCount++;
 
-    // Progressive text changes
+    // ✅ CORRECT TEXT PROGRESSION
     if (noHoverCount <= 2) {
       noBtn.textContent = "No ??";
     } else if (noHoverCount <= 4) {
       noBtn.textContent = "Are you sure?";
     } else if (noHoverCount <= 6) {
-      noBtn.textContent = "Thomas.";
+      noBtn.textContent = "Catch me if u can :p";
     } else if (noHoverCount <= 8) {
-      noBtn.textContent = "Be serious.";
+      noBtn.textContent = "????";
     } else {
       noBtn.textContent = "what the fuck";
     }
