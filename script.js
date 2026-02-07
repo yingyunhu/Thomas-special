@@ -238,6 +238,41 @@ noBtn.addEventListener("pointerdown", (e) => {
 noBtn.addEventListener("mouseenter", () => {
   if (window.innerWidth > 768) {
     setHeartsTemporarily("💔", 900);
+
+    noHoverCount++;
+
+    // Progressive text changes
+    if (noHoverCount <= 2) {
+      noBtn.textContent = "No ??";
+    } else if (noHoverCount <= 4) {
+      noBtn.textContent = "Are you sure?";
+    } else if (noHoverCount <= 6) {
+      noBtn.textContent = "Thomas.";
+    } else if (noHoverCount <= 8) {
+      noBtn.textContent = "Be serious.";
+    } else {
+      noBtn.textContent = "what the fuck";
+    }
+
+    if (noHoverCount >= 7) permaAngry = true;
+
+    if (noHoverCount >= 10 && !bossBackgroundActivated) {
+      bossBackgroundActivated = true;
+
+      document.body.style.backgroundImage = `url(${noHoverCatSrc})`;
+      document.body.style.backgroundSize = "cover";
+      document.body.style.backgroundPosition = "center";
+      document.body.style.backgroundRepeat = "no-repeat";
+      document.body.style.backgroundColor = "rgba(0,0,0,0.35)";
+    }
+
+    if (mainCatImg) {
+      if (permaAngry || noHoverCount >= 3) {
+        mainCatImg.src = noHoverCatSrc;
+      } else {
+        mainCatImg.src = originalCatSrc;
+      }
+    }
     
     if (canPlayHoverSound) {
       sounds.hover.currentTime = 0;
@@ -245,6 +280,25 @@ noBtn.addEventListener("mouseenter", () => {
       
       canPlayHoverSound = false;
       setTimeout(() => canPlayHoverSound = true, 200);
+    }
+
+    // YES grows
+    yesSize += 0.15;
+    yesBtn.style.transform = `scale(${yesSize})`;
+
+    // Shake screen
+    document.body.style.animation = "shake 0.3s";
+    setTimeout(() => {
+      document.body.style.animation = "";
+    }, 300);
+
+    // Redder background
+    const t = Math.min(noHoverCount / 8, 1);
+    const r = Math.round(50 + 205 * t);
+    const g = Math.round(60 * (1 - t));
+    const b = Math.round(156 * (1 - t));
+    if (!bossBackgroundActivated) {
+      document.body.style.background = `rgb(${r}, ${g}, ${b})`;
     }
     
     noBtn.style.position = "fixed";
