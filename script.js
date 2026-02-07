@@ -82,6 +82,44 @@ function setHeartsTemporarily(symbol, ms = 900) {
   }, ms);
 }
 
+// ✅ Smart positioning that avoids Yes button
+function getRandomPositionAvoidingYes() {
+  const container = document.querySelector(".container");
+  const containerRect = container.getBoundingClientRect();
+  const yesRect = yesBtn.getBoundingClientRect();
+  const btnWidth = noBtn.offsetWidth;
+  const btnHeight = noBtn.offsetHeight;
+  const padding = 20;
+  const avoidDistance = 80; // extra space around Yes button
+
+  const minX = containerRect.left + padding;
+  const minY = containerRect.top + padding;
+  const maxX = containerRect.right - btnWidth - padding;
+  const maxY = containerRect.bottom - btnHeight - padding;
+
+  let newX, newY, attempts = 0;
+  
+  do {
+    newX = minX + Math.random() * (maxX - minX);
+    newY = minY + Math.random() * (maxY - minY);
+    attempts++;
+    
+    // Check if new position overlaps with Yes button (with buffer zone)
+    const overlapsX = newX < yesRect.right + avoidDistance && 
+                      newX + btnWidth > yesRect.left - avoidDistance;
+    const overlapsY = newY < yesRect.bottom + avoidDistance && 
+                      newY + btnHeight > yesRect.top - avoidDistance;
+    
+    // If no overlap, we're good!
+    if (!(overlapsX && overlapsY)) break;
+    
+    // Safety: after 20 attempts, just place it anywhere
+    if (attempts > 20) break;
+  } while (true);
+  
+  return { x: newX, y: newY };
+}
+
 startHearts("💕");
 
 envelopeContainer.addEventListener("click", () => {
@@ -161,9 +199,9 @@ noBtn.addEventListener("pointerdown", (e) => {
   } else if (noHoverCount <= 4) {
     noBtn.textContent = "Are you sure?";
   } else if (noHoverCount <= 6) {
-    noBtn.textContent = "Catch me if u can :p.";
+    noBtn.textContent = "Thomas.";
   } else if (noHoverCount <= 8) {
-    noBtn.textContent = "????";
+    noBtn.textContent = "Be serious.";
   } else {
     noBtn.textContent = "what the fuck";
   }
@@ -215,23 +253,10 @@ noBtn.addEventListener("pointerdown", (e) => {
 
   noBtn.style.position = "fixed";
 
-  const container = document.querySelector(".container");
-  const containerRect = container.getBoundingClientRect();
-  
-  const btnWidth = noBtn.offsetWidth;
-  const btnHeight = noBtn.offsetHeight;
-  const padding = 20;
-
-  const minX = containerRect.left + padding;
-  const minY = containerRect.top + padding;
-  const maxX = containerRect.right - btnWidth - padding;
-  const maxY = containerRect.bottom - btnHeight - padding;
-
-  const newX = minX + Math.random() * (maxX - minX);
-  const newY = minY + Math.random() * (maxY - minY);
-
-  noBtn.style.left = newX + "px";
-  noBtn.style.top = newY + "px";
+  // ✅ Use smart positioning
+  const pos = getRandomPositionAvoidingYes();
+  noBtn.style.left = pos.x + "px";
+  noBtn.style.top = pos.y + "px";
   noBtn.style.transform = "translate(0, 0)";
 });
 
@@ -305,22 +330,10 @@ noBtn.addEventListener("mouseenter", () => {
     setTimeout(() => {
       noBtn.style.position = "fixed";
       
-      const container = document.querySelector(".container");
-      const containerRect = container.getBoundingClientRect();
-      const btnWidth = noBtn.offsetWidth;
-      const btnHeight = noBtn.offsetHeight;
-      const padding = 20;
-      
-      const minX = containerRect.left + padding;
-      const minY = containerRect.top + padding;
-      const maxX = containerRect.right - btnWidth - padding;
-      const maxY = containerRect.bottom - btnHeight - padding;
-      
-      const newX = minX + Math.random() * (maxX - minX);
-      const newY = minY + Math.random() * (maxY - minY);
-      
-      noBtn.style.left = newX + "px";
-      noBtn.style.top = newY + "px";
+      // ✅ Use smart positioning
+      const pos = getRandomPositionAvoidingYes();
+      noBtn.style.left = pos.x + "px";
+      noBtn.style.top = pos.y + "px";
     }, 50); // tiny 50ms delay so effects happen first
   }
 });
