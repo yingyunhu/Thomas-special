@@ -48,6 +48,7 @@ body {
   background: #324e9c;
   border-radius: 10px;
   position: relative;
+  overflow: visible;
 }
 
 .envelope-flap {
@@ -61,6 +62,7 @@ body {
   left: 0;
   transform-origin: top;
   transition: transform 0.6s;
+  z-index: 2;
 }
 
 .envelope.opening .envelope-flap {
@@ -79,6 +81,23 @@ body {
   align-items: center;
   justify-content: center;
   font-size: 28px;
+  z-index: 1;
+}
+
+.envelope.opening .letter {
+  animation: slideOut 0.8s ease-out forwards;
+  animation-delay: 0.3s;
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-150px);
+    opacity: 0;
+  }
 }
 
 .container {
@@ -144,8 +163,7 @@ button {
   font-size: 30px;
   animation: floatUp 4s ease-in forwards;
   pointer-events: none;
-  opacity: 1; 
-
+  opacity: 1;
 }
 
 @keyframes floatUp {
@@ -182,18 +200,4 @@ button {
 .cat-happy {
   width: 200px;
   margin-bottom: 20px;
-}
-.envelope.opening .letter {
-  animation: slideOut 0.8s ease-out forwards;
-  animation-delay: 0.3s;
-}
-
-@keyframes slideOut {
-  from {
-    transform: translateY(0);
-  }
-  to {
-    transform: translateY(-150px);
-    opacity: 0;
-  }
 }
