@@ -161,9 +161,9 @@ noBtn.addEventListener("pointerdown", (e) => {
   } else if (noHoverCount <= 4) {
     noBtn.textContent = "Are you sure?";
   } else if (noHoverCount <= 6) {
-    noBtn.textContent = "Thomas.";
+    noBtn.textContent = "Catch me if u can :p.";
   } else if (noHoverCount <= 8) {
-    noBtn.textContent = "Be serious.";
+    noBtn.textContent = "????";
   } else {
     noBtn.textContent = "what the fuck";
   }
@@ -301,24 +301,27 @@ noBtn.addEventListener("mouseenter", () => {
       document.body.style.background = `rgb(${r}, ${g}, ${b})`;
     }
     
-    noBtn.style.position = "fixed";
-    
-    const container = document.querySelector(".container");
-    const containerRect = container.getBoundingClientRect();
-    const btnWidth = noBtn.offsetWidth;
-    const btnHeight = noBtn.offsetHeight;
-    const padding = 20;
-    
-    const minX = containerRect.left + padding;
-    const minY = containerRect.top + padding;
-    const maxX = containerRect.right - btnWidth - padding;
-    const maxY = containerRect.bottom - btnHeight - padding;
-    
-    const newX = minX + Math.random() * (maxX - minX);
-    const newY = minY + Math.random() * (maxY - minY);
-    
-    noBtn.style.left = newX + "px";
-    noBtn.style.top = newY + "px";
+    // ✅ MOVE BUTTON POSITIONING TO THE VERY END WITH A TINY DELAY
+    setTimeout(() => {
+      noBtn.style.position = "fixed";
+      
+      const container = document.querySelector(".container");
+      const containerRect = container.getBoundingClientRect();
+      const btnWidth = noBtn.offsetWidth;
+      const btnHeight = noBtn.offsetHeight;
+      const padding = 20;
+      
+      const minX = containerRect.left + padding;
+      const minY = containerRect.top + padding;
+      const maxX = containerRect.right - btnWidth - padding;
+      const maxY = containerRect.bottom - btnHeight - padding;
+      
+      const newX = minX + Math.random() * (maxX - minX);
+      const newY = minY + Math.random() * (maxY - minY);
+      
+      noBtn.style.left = newX + "px";
+      noBtn.style.top = newY + "px";
+    }, 50); // tiny 50ms delay so effects happen first
   }
 });
 
