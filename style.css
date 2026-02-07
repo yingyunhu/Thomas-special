@@ -183,3 +183,17 @@ button {
   width: 200px;
   margin-bottom: 20px;
 }
+.envelope.opening .letter {
+  animation: slideOut 0.8s ease-out forwards;
+  animation-delay: 0.3s;
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-150px);
+    opacity: 0;
+  }
+}
